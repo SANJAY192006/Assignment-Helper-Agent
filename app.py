@@ -75,6 +75,24 @@ class Assignment(db.Model):
         return f'<Assignment {self.id} – {self.topic}>'
 
 
+# ─── Initialize Database Tables & Developer Seed ───────────────────────────────
+with app.app_context():
+    try:
+        db.create_all()
+        logger.info("✅ Database tables created / verified.")
+        
+        # Seed default developer credentials if not present
+        default_user = User.query.filter_by(username="Kumar").first()
+        if not default_user:
+            user = User(username="Kumar", email="kumar@eduassist.com")
+            user.set_password("Kumar1234")
+            db.session.add(user)
+            db.session.commit()
+            logger.info("👤 Default developer user 'Kumar' created successfully.")
+    except Exception as e:
+        logger.error(f"❌ Failed to initialize database: {e}")
+
+
 # ─── Gemini API Setup ──────────────────────────────────────────────────────────
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "").strip()
 if GEMINI_API_KEY:
@@ -522,22 +540,6 @@ def generate():
 
 # ─── Run ───────────────────────────────────────────────────────────────────────
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-        logger.info("✅ Database tables created / verified.")
-        
-        # Seed default developer credentials if not present
-        default_user = User.query.filter_by(username="Kumar").first()
-        if not default_user:
-            try:
-                user = User(username="Kumar", email="kumar@eduassist.com")
-                user.set_password("Kumar1234")
-                db.session.add(user)
-                db.session.commit()
-                logger.info("👤 Default developer user 'Kumar' created successfully.")
-            except Exception as e:
-                logger.error(f"❌ Failed to seed default developer user: {e}")
-
     port  = int(os.getenv("PORT", 5000))
     debug = os.getenv("FLASK_ENV", "development") == "development"
     logger.info(f"🚀 EduAssist AI starting on http://0.0.0.0:{port}")
