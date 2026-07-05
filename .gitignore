@@ -1,0 +1,32 @@
+# Python virtual environments
+venv/
+ENV/
+env/
+.venv/
+bin/
+lib/
+include/
+
+# Python cache & compiles
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment variables (Credentials & Keys)
+.env
+
+# Local Databases
+eduassist.db
+
+# Frontend dependency & builds
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+
+# Logs
+*.log
+
+# Editors
+.vscode/
+.idea/
+.DS_Store

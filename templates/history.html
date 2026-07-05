@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment History — EduAssist AI</title>
+    <meta name="description" content="View all your previously generated AI assignment guides.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        /* ── History Page Styles ───────────────────────────────────── */
+        .history-main {
+            padding: 2rem 0 4rem;
+            min-height: calc(100vh - 70px);
+            position: relative;
+            z-index: 1;
+        }
+        .history-hero {
+            text-align: center;
+            padding: 2.5rem 1rem 2rem;
+        }
+        .history-hero .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--accent-light);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+        .history-hero h1 {
+            font-size: clamp(1.6rem, 4vw, 2.4rem);
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        .history-hero p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+        .history-stats-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        .history-stat-pill {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            padding: 0.4rem 1.1rem;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+        }
+        .history-stat-pill strong {
+            color: var(--accent-light);
+        }
+        /* Empty state */
+        .history-empty {
+            text-align: center;
+            padding: 4rem 1.5rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            backdrop-filter: blur(16px);
+        }
+        .history-empty i {
+            font-size: 3.5rem;
+            background: var(--accent-grad);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: block;
+            margin-bottom: 1rem;
+        }
+        /* Assignment cards */
+        .assignment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.25rem;
+        }
+        .assignment-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            backdrop-filter: blur(16px);
+            padding: 1.4rem 1.5rem;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .assignment-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: var(--accent-grad);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .assignment-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(99,102,241,0.4);
+            box-shadow: 0 8px 32px rgba(99,102,241,0.15);
+        }
+        .assignment-card:hover::before {
+            opacity: 1;
+        }
+        .card-subject-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            background: rgba(99,102,241,0.12);
+            border: 1px solid rgba(99,102,241,0.25);
+            color: var(--accent-light);
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.28rem 0.7rem;
+            border-radius: 50px;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            width: fit-content;
+        }
+        .card-topic {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.35;
+        }
+        .card-question-preview {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .card-date {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+        .card-actions {
+            display: flex;
+            gap: 0.6rem;
+            margin-top: auto;
+        }
+        .btn-view-guide {
+            flex: 1;
+            background: var(--accent-grad);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 0.55rem 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            transition: opacity 0.2s, transform 0.15s;
+        }
+        .btn-view-guide:hover {
+            opacity: 0.88;
+            transform: translateY(-1px);
+        }
+        .btn-delete-card {
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.25);
+            border-radius: 10px;
+            color: #ef4444;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.55rem 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: background 0.2s, transform 0.15s;
+        }
+        .btn-delete-card:hover {
+            background: rgba(239,68,68,0.2);
+            transform: translateY(-1px);
+        }
+        .deleting {
+            opacity: 0.4;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Animated Background -->
+    <div class="bg-particles" id="bgParticles" aria-hidden="true"></div>
+    <div class="orb orb-1" aria-hidden="true"></div>
+    <div class="orb orb-2" aria-hidden="true"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg sticky-top" id="mainNav" role="navigation" aria-label="Main navigation">
+        <div class="container-fluid px-md-5">
+            <a class="navbar-brand" href="/form" aria-label="EduAssist AI">
+                <div class="brand-logo-wrap" aria-hidden="true"><i class="bi bi-mortarboard-fill"></i></div>
+                <span class="brand-text">Edu<span class="brand-accent">Assist</span> <span class="brand-ai">AI</span></span>
+            </a>
+            <div class="d-flex align-items-center gap-2 ms-auto flex-wrap">
+                <button id="themeToggleBtn" class="theme-toggle-btn" aria-label="Toggle theme">
+                    <i class="bi bi-moon-stars-fill" id="themeIcon" aria-hidden="true"></i>
+                </button>
+                <a href="/form" class="btn btn-tool" style="text-decoration:none;" aria-label="New Assignment">
+                    <i class="bi bi-plus-circle" aria-hidden="true"></i>
+                    <span class="d-none d-sm-inline">New</span>
+                </a>
+                <a href="/history" class="btn btn-tool active-tool" style="text-decoration:none;" aria-label="History">
+                    <i class="bi bi-clock-history" aria-hidden="true"></i>
+                    <span class="d-none d-sm-inline">History</span>
+                </a>
+                <a href="/logout" class="btn btn-tool" style="text-decoration:none;" aria-label="Logout">
+                    <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+                    <span class="d-none d-sm-inline">Logout</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="history-main" role="main">
+        <div class="container" style="max-width:1100px; position:relative; z-index:1;">
+
+            <!-- Hero -->
+            <div class="history-hero">
+                <div class="hero-badge">
+                    <i class="bi bi-clock-history" aria-hidden="true"></i> Assignment History
+                </div>
+                <h1>Your Learning <span class="gradient-text">Journey</span></h1>
+                <p>All your AI-generated guides, saved and ready to revisit.</p>
+            </div>
+
+            <!-- Stats bar -->
+            <div class="history-stats-bar">
+                <div class="history-stat-pill">
+                    <i class="bi bi-collection-fill"></i>
+                    Total Guides: <strong>{{ assignments|length }}</strong>
+                </div>
+                <div class="history-stat-pill">
+                    <i class="bi bi-person-fill"></i>
+                    Logged in as: <strong>{{ username }}</strong>
+                </div>
+            </div>
+
+            {% if assignments %}
+            <!-- Assignment Grid -->
+            <div class="assignment-grid" id="assignmentGrid">
+                {% for a in assignments %}
+                <div class="assignment-card" id="card-{{ a.id }}" data-id="{{ a.id }}">
+                    <div class="card-subject-badge">
+                        <i class="bi bi-book-fill"></i> {{ a.subject }}
+                    </div>
+                    <div class="card-topic">{{ a.topic }}</div>
+                    <div class="card-question-preview">{{ a.question }}</div>
+                    <div class="card-date">
+                        <i class="bi bi-calendar3"></i>
+                        {{ a.created_at.strftime('%d %b %Y, %I:%M %p') }}
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn-view-guide" onclick="viewGuide({{ a.id }})" aria-label="View guide for {{ a.topic }}">
+                            <i class="bi bi-eye-fill"></i> View Guide
+                        </button>
+                        <button class="btn-delete-card" onclick="deleteGuide({{ a.id }}, this)" aria-label="Delete guide for {{ a.topic }}">
+                            <i class="bi bi-trash3-fill"></i>
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% else %}
+            <!-- Empty State -->
+            <div class="history-empty">
+                <i class="bi bi-journal-x"></i>
+                <h2 style="font-size:1.5rem; font-weight:800; color:var(--text-primary); margin-bottom:0.5rem;">No Guides Yet</h2>
+                <p style="color:var(--text-secondary); margin-bottom:2rem;">You haven't generated any assignment guides yet. Go ahead and create your first one!</p>
+                <a href="/form" class="btn btn-generate" style="display:inline-flex; text-decoration:none; width:auto; padding:0.75rem 2rem;">
+                    <span class="btn-generate-inner">
+                        <i class="bi bi-stars" aria-hidden="true"></i>
+                        <span>Generate My First Guide</span>
+                        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                    </span>
+                    <span class="btn-shine" aria-hidden="true"></span>
+                </a>
+            </div>
+            {% endif %}
+
+        </div>
+    </main>
+
+    <!-- Toast -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:2100">
+        <div id="copyToast" class="toast custom-toast align-items-center" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-body d-flex align-items-center justify-content-between gap-3 py-3">
+                <div class="d-flex align-items-center gap-2" id="toastMessageContainer">
+                    <i class="bi bi-check-circle-fill fs-5" id="toastIcon" aria-hidden="true"></i>
+                    <span class="fw-semibold" id="toastMessage">Done!</span>
+                </div>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/script.js"></script>
+    <script>
+        async function viewGuide(id) {
+            try {
+                const res = await fetch(`/history/${id}`);
+                if (!res.ok) { showToast('Failed to load guide.', true); return; }
+                const data = await res.json();
+                sessionStorage.setItem('eduassist-guide', JSON.stringify(data.guide));
+                sessionStorage.setItem('eduassist-meta', JSON.stringify({
+                    subject:  data.subject,
+                    topic:    data.topic,
+                    question: data.question
+                }));
+                window.location.href = '/guide';
+            } catch (e) {
+                showToast('Network error. Please try again.', true);
+            }
+        }
+
+        async function deleteGuide(id, btn) {
+            if (!confirm('Delete this assignment guide? This cannot be undone.')) return;
+            const card = document.getElementById(`card-${id}`);
+            card?.classList.add('deleting');
+            try {
+                const res = await fetch(`/history/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    card?.remove();
+                    showToast('Assignment deleted.');
+                    // If no cards left, reload to show empty state
+                    if (!document.querySelector('.assignment-card')) {
+                        setTimeout(() => location.reload(), 1200);
+                    }
+                } else {
+                    card?.classList.remove('deleting');
+                    showToast('Delete failed.', true);
+                }
+            } catch (e) {
+                card?.classList.remove('deleting');
+                showToast('Network error.', true);
+            }
+        }
+    </script>
+</body>
+</html>
