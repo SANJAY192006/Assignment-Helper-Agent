@@ -222,6 +222,32 @@ You can register an account directly on the UI or use this pre-configured develo
 * **Username**: `Kumar`
 * **Password**: `Kumar1234`
 
+### ☁️ Deploying to Render
+
+This application is pre-configured for automated deployment to **Render** using the provided `render.yaml` Blueprint.
+
+#### Option A: Blueprint Deployment (Recommended)
+1. Commit and push your repository to GitHub.
+2. In the [Render Dashboard](https://dashboard.render.com/), click **New** -> **Blueprint**.
+3. Select and connect your repository.
+4. Render will parse `render.yaml` and provision:
+   - A free-tier **PostgreSQL Database** resource.
+   - A **Python Web Service** mapped to run `gunicorn app:app`.
+   - The database credentials, automatically linked via `DATABASE_URL`.
+5. Enter your **`GEMINI_API_KEY`** value when prompted in the configuration setup.
+
+#### Option B: Manual Setup
+If you prefer to configure resources manually:
+1. Create a new **Web Service** on Render and connect your GitHub repo.
+2. Set configuration properties:
+   - **Environment**: `Python`
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `gunicorn app:app`
+3. Add the following **Environment Variables**:
+   - `GEMINI_API_KEY`: *(your Gemini API key)*
+   - `FLASK_ENV`: `production`
+   - `SECRET_KEY`: *(a random secure key string)*
+
 ---
 
 ## 🛣️ Backend Endpoints Catalog

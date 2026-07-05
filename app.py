@@ -26,7 +26,14 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 if os.getenv('TESTING') == 'true':
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
 else:
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'eduassist.db')
+    db_url = os.getenv('DATABASE_URL')
+    if db_url:
+        # SQLAlchemy 1.4+ requires 'postgresql://' instead of 'postgres://'
+        if db_url.startswith("postgres://"):
+            db_url = db_url.replace("postgres://", "postgresql://", 1)
+        app.config['SQLALCHEMY_DATABASE_URI'] = db_url
+    else:
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'eduassist.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)

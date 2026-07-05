@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: eduassist-ai
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: eduassist-db
+          property: connectionString
+
+databases:
+  - name: eduassist-db
+    plan: free
