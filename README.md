@@ -232,7 +232,7 @@ This application is pre-configured for automated deployment to **Render** using 
 3. Select and connect your repository.
 4. Render will parse `render.yaml` and provision:
    - A free-tier **PostgreSQL Database** resource.
-   - A **Python Web Service** mapped to run `gunicorn app:app`.
+   - A **Python Web Service** mapped to run `gunicorn --timeout 120 app:app`.
    - The database credentials, automatically linked via `DATABASE_URL`.
 5. Enter your **`GEMINI_API_KEY`** value when prompted in the configuration setup.
 
@@ -242,7 +242,7 @@ If you prefer to configure resources manually:
 2. Set configuration properties:
    - **Environment**: `Python`
    - **Build Command**: `pip install -r requirements.txt`
-   - **Start Command**: `gunicorn app:app`
+   - **Start Command**: `gunicorn --timeout 120 app:app`
 3. Add the following **Environment Variables**:
    - `GEMINI_API_KEY`: *(your Gemini API key)*
    - `FLASK_ENV`: `production`

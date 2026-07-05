@@ -3,7 +3,7 @@ services:
     name: eduassist-ai
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app
+    startCommand: gunicorn --timeout 120 app:app
     envVars:
       - key: FLASK_ENV
         value: production
