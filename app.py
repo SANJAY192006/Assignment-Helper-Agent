@@ -109,7 +109,7 @@ ASSIGNMENT_SCHEMA = {
             "type": "STRING",
             "description": (
                 "Explain the topic in clear, simple language for an engineering student. "
-                "Use markdown: headings, bold, bullet points where helpful. "
+                "Limit to 100-150 words. Use markdown formatting. "
                 "Cover: what it is, why it matters, and real-world relevance."
             )
         },
@@ -117,31 +117,29 @@ ASSIGNMENT_SCHEMA = {
             "type": "ARRAY",
             "items": {"type": "STRING"},
             "description": (
-                "5-7 specific, measurable learning objectives the student will achieve. "
-                "Start each with an action verb: Understand, Apply, Analyze, Implement, Compare, etc."
+                "3-4 specific, measurable learning objectives the student will achieve. "
+                "Start each with an action verb: Understand, Apply, Analyze, etc."
             )
         },
         "step_by_step_explanation": {
             "type": "STRING",
             "description": (
                 "Break the solution into clear numbered steps using markdown. "
-                "Explain the WHY behind each step. Use subheadings, examples inline, "
-                "and diagrams described in text if needed."
+                "Explain the WHY behind each step. Keep explanations concise."
             )
         },
         "simple_example": {
             "type": "STRING",
             "description": (
-                "A beginner-friendly real-world analogy or worked example "
-                "that makes the concept click. Use markdown for clarity."
+                "A brief beginner-friendly real-world analogy or worked example "
+                "that makes the concept click. Limit to 80-100 words."
             )
         },
         "assignment_solution": {
             "type": "STRING",
             "description": (
                 "A complete, well-structured academic answer for submission. "
-                "Should be comprehensive, properly formatted in markdown, and reference "
-                "the concepts explained above. Suitable for university-level marks."
+                "Should be focused, properly formatted in markdown, and suitable for university-level marks."
             )
         },
         "code_example": {
@@ -153,7 +151,7 @@ ASSIGNMENT_SCHEMA = {
                 },
                 "explanation": {
                     "type": "STRING",
-                    "description": "Explain what the code does and the logic behind it before showing it. Use markdown."
+                    "description": "Briefly explain what the code does and the logic behind it. Use markdown."
                 },
                 "code": {
                     "type": "STRING",
@@ -171,7 +169,7 @@ ASSIGNMENT_SCHEMA = {
             "properties": {
                 "time_complexity":  {"type": "STRING", "description": "Big-O time complexity (e.g., O(log n)) or 'N/A'."},
                 "space_complexity": {"type": "STRING", "description": "Big-O space complexity (e.g., O(1)) or 'N/A'."},
-                "explanation":      {"type": "STRING", "description": "Explain why these complexities hold. Use markdown. Write 'N/A' if not applicable."}
+                "explanation":      {"type": "STRING", "description": "Briefly explain why these complexities hold. Write 'N/A' if not applicable."}
             },
             "required": ["time_complexity", "space_complexity", "explanation"],
             "description": "Complexity analysis for algorithm/code questions. Use N/A for theoretical topics."
@@ -179,7 +177,7 @@ ASSIGNMENT_SCHEMA = {
         "important_key_points": {
             "type": "ARRAY",
             "items": {"type": "STRING"},
-            "description": "6-8 essential concepts, facts, or rules the student must remember for exams."
+            "description": "4-5 essential concepts, facts, or rules the student must remember for exams."
         },
         "viva_questions": {
             "type": "ARRAY",
@@ -191,12 +189,12 @@ ASSIGNMENT_SCHEMA = {
                 },
                 "required": ["question", "answer"]
             },
-            "description": "5 likely viva/oral exam questions with concise, accurate answers."
+            "description": "3 likely viva/oral exam questions with concise, accurate answers."
         },
         "practice_questions": {
             "type": "ARRAY",
             "items": {"type": "STRING"},
-            "description": "4 similar practice questions at varying difficulty. Do NOT provide answers."
+            "description": "3 similar practice questions at varying difficulty. Do NOT provide answers."
         },
         "interview_questions": {
             "type": "ARRAY",
@@ -208,13 +206,13 @@ ASSIGNMENT_SCHEMA = {
                 },
                 "required": ["question", "answer"]
             },
-            "description": "3 beginner-to-intermediate interview questions on this topic with clear answers."
+            "description": "2 beginner-to-intermediate interview questions on this topic with clear answers."
         },
         "short_summary": {
             "type": "STRING",
             "description": (
-                "A concise 150-200 word revision summary of the entire topic. "
-                "Capture all key concepts in markdown bullet points. "
+                "A concise 80-100 word revision summary of the entire topic. "
+                "Capture key concepts in markdown bullet points. "
                 "End with a one-line takeaway the student can memorize."
             )
         }
